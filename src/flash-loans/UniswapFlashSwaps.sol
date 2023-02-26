@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
 import {IUniswapV2Pair, IUniswapV2Factory} from "./interfaces/Uniswap.sol";

@@ -5,14 +5,21 @@ import "./interfaces/aave/FlashLoanReceiverBase.sol";
 import "./interfaces/IERC20.sol";
 
 contract AaveFlash is FlashLoanReceiverBase {
+    struct Result {
+        address initiator;
+        address caller;
+        address asset;
+        uint256 amount;
+        uint256 premium;
+    }
+
+    Result public result;
+
     constructor(ILendingPoolAddressesProvider _addressProvider)
         FlashLoanReceiverBase(_addressProvider)
     {}
 
     function flashloan(address _asset, uint256 _amount) public {
-        uint256 balance = IERC20(_asset).balanceOf(address(this));
-        require(balance > _amount, "AAF/balance <= amount");
-
         address receiver = address(this);
 
         address[] memory assets = new address[](1);
@@ -58,12 +65,19 @@ contract AaveFlash is FlashLoanReceiverBase {
         // the flashloaned amounts + premiums.
         // Therefore ensure your contract has enough to repay
         // these amounts.
-
         // Approve the LendingPool contract allowance to *pull* the owed amount
         for (uint256 i = 0; i < assets.length; i++) {
             uint256 amountOwed = amounts[i] + premiums[i];
-            IERC20(assets[i]).approve(address(LENDING_POOL), amountOwed);
+            IERC20(assets[i]).approve(msg.sender, amountOwed);
         }
+
+        result = Result(
+            initiator,
+            msg.sender,
+            assets[0],
+            amounts[0],
+            premiums[0]
+        );
 
         return true;
     }

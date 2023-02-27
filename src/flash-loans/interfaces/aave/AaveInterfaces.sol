@@ -425,6 +425,8 @@ interface ILendingPool {
         address rateStrategyAddress
     ) external;
 
+    function FLASHLOAN_PREMIUM_TOTAL() external returns (uint256);
+
     function setConfiguration(address reserve, uint256 configuration) external;
 
     /**
